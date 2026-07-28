@@ -1,20 +1,19 @@
 source marllib_1/Scripts/activate  # first step
 
-## illu
+## illu (自动加时间戳)
 
-python illu.py $render_log
+LOG=log_$(date +%Y%m%d_%H%M%S).txt
+python illu.py $LOG
 
-(logrender2.txt)
+## render (自动加时间戳)
 
-## render
+LOG=log_$(date +%Y%m%d_%H%M%S).txt
+python render.py >$LOG
 
-python render.py >$render_log
+## train (自动加时间戳)
 
-## train
-
-python train.py >$train_log
-
-(lognow2.txt)
+LOG=log_$(date +%Y%m%d_%H%M%S).txt
+python train.py >$LOG
 
 ## hyparam_path
 
@@ -23,5 +22,5 @@ python train.py >$train_log
 ## 只显示初始图：
 python illu_test.py
 
-## 根据渲染结果显示最终的扇区图：
-python old_illu.py logrender2.txt
+## 根据渲染结果显示最终的扇区图（替换 LOG 为实际文件名）：
+python old_illu.py log_$(date +%Y%m%d_%H%M%S).txt
