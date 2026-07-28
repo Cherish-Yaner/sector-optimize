@@ -1,0 +1,14 @@
+{
+  "scene_count": 5,
+  "data_name": "35data",
+  "auto_reload": {
+    "hexgrid": false,
+    "sectors": false,
+    "payload": true
+  },
+  "view_mode": {
+    "grid_name": false,
+    "fill_color": true,
+    "flight_point_name": false
+  }
+}

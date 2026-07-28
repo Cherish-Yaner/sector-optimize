@@ -1,0 +1,12 @@
+marllib_1/
+MARLlib/
+marllib_test/
+__pycache__/
+.vscode/
+logs/
+obs/
+exp_results/
+test/
+*.zip
+*.pyc
+pid.txt

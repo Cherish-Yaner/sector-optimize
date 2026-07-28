@@ -1,0 +1,72 @@
+load existing gridization result...
+load existing sections...
+scene init done
+section 0 instant_flow 11.899999999999999 conflict_dissolution_cnt 1.0
+section 1 instant_flow 10.1 conflict_dissolution_cnt 10.0
+section 2 instant_flow 4.5 conflict_dissolution_cnt 0.0
+Step 1
+section 0 instant_flow 11.9 conflict_dissolution_cnt 1.0
+section 1 instant_flow 10.1 conflict_dissolution_cnt 10.0
+section 2 instant_flow 4.5 conflict_dissolution_cnt 0.0
+section 0 payload 586.7125333333329
+valid transfers: [27, 75, 76, 156, 157, 186, 227, 228, 270, 271, 286, 307, 308, 345, 366, 405, 423]
+section 1 payload 625.564
+valid transfers: []
+section 2 payload 279.24737619047636
+valid transfers: [395, 396, 397, 398, 399, 400, 401, 402, 403, 423, 438, 439, 440, 444, 445, 464, 465, 476, 526, 529, 531]
+Step 2
+section 0 instant_flow 11.899999999999999 conflict_dissolution_cnt 1.0
+section 1 instant_flow 10.1 conflict_dissolution_cnt 10.0
+section 2 instant_flow 4.5 conflict_dissolution_cnt 0.0
+section 0 payload 717.768
+valid transfers: []
+section 1 payload 699.5585000000001
+valid transfers: [28, 74, 112, 155, 187, 225, 226, 249, 269, 287, 305, 306, 346, 364, 365, 406, 421]
+section 2 payload 319.3224999999999
+valid transfers: [395, 396, 397, 398, 399, 400, 401, 402, 403, 423, 438, 439, 440, 444, 445, 464, 465, 476, 526, 529, 531]
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| Env_Name           | Check_Status   | Error_Log                                                            | Config_File_Location                         | Env_File_Location                   |
++====================+================+======================================================================+==============================================+=====================================+
+| gymnasium_mamujoco | Error          | No module named 'gymnasium_robotics'                                 | envs/base_env/config/gymnasium_mamujoco.yaml | envs/base_env/gymnasium_mamujoco.py |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| mpe                | Ready          | Null                                                                 | envs/base_env/config/mpe.yaml                | envs/base_env/mpe.py                |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| gymnasium_mpe      | Error          | cannot import name 'simple_adversary_v3' from 'pettingzoo.mpe'       | envs/base_env/config/gymnasium_mpe.yaml      | envs/base_env/gymnasium_mpe.py      |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| mamujoco           | Error          | No module named 'multiagent_mujoco'                                  | envs/base_env/config/mamujoco.yaml           | envs/base_env/mamujoco.py           |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| smac               | Error          | No module named 'smac'                                               | envs/base_env/config/smac.yaml               | envs/base_env/smac.py               |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| football           | Error          | No module named 'gfootball'                                          | envs/base_env/config/football.yaml           | envs/base_env/football.py           |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| magent             | Error          | cannot import name 'adversarial_pursuit_v3' from 'pettingzoo.magent' | envs/base_env/config/magent.yaml             | envs/base_env/magent.py             |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| rware              | Error          | No module named 'rware'                                              | envs/base_env/config/rware.yaml              | envs/base_env/rware.py              |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| lbf                | Error          | No module named 'lbforaging'                                         | envs/base_env/config/lbf.yaml                | envs/base_env/lbf.py                |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| pommerman          | Error          | No module named 'pommerman'                                          | envs/base_env/config/pommerman.yaml          | envs/base_env/pommerman.py          |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| hanabi             | Error          | No module named 'cffi'                                               | envs/base_env/config/hanabi.yaml             | envs/base_env/hanabi.py             |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| metadrive          | Error          | No module named 'metadrive'                                          | envs/base_env/config/metadrive.yaml          | envs/base_env/metadrive.py          |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| mate               | Error          | No module named 'mate'                                               | envs/base_env/config/mate.yaml               | envs/base_env/mate.py               |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| gobigger           | Error          | No module named 'gobigger'                                           | envs/base_env/config/gobigger.yaml           | envs/base_env/gobigger.py           |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| overcooked         | Error          | No module named 'overcooked_ai_py'                                   | envs/base_env/config/overcooked.yaml         | envs/base_env/overcooked.py         |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| voltage            | Error          | No module named 'pandapower'                                         | envs/base_env/config/voltage.yaml            | envs/base_env/voltage.py            |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| aircombat          | Error          | No module named 'jsbsim'                                             | envs/base_env/config/aircombat.yaml          | envs/base_env/aircombat.py          |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| hns                | Error          | No module named 'mujoco_worldgen'                                    | envs/base_env/config/hns.yaml                | envs/base_env/hns.py                |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| sisl               | Error          | cannot import name 'multiwalker_v7' from 'pettingzoo.sisl'           | envs/base_env/config/sisl.yaml               | envs/base_env/sisl.py               |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+| TBXGridEnv         | Ready          | Null                                                                 | envs/base_env/config/TBXGridEnv.yaml         | envs/base_env/TBXGridEnv.py         |
++--------------------+----------------+----------------------------------------------------------------------+----------------------------------------------+-------------------------------------+
+horizon: 999
+num_agents: 3
+num_grids: 744

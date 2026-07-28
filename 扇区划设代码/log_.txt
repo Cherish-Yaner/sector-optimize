@@ -1,0 +1,46 @@
+Traceback (most recent call last):
+  File "C:\Users\Bardi\Work\series\4-4\3-11\render.py", line 2, in <module>
+    from init import init
+  File "C:\Users\Bardi\Work\series\4-4\3-11\init.py", line 15, in <module>
+    from scene import scene_step, scene_init, step_cnt, scene_val
+  File "C:\Users\Bardi\Work\series\4-4\3-11\scene.py", line 25, in <module>
+    payload_fit_model = pickle.load(f)
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\sklearn\__init__.py", line 82, in <module>
+    from .base import clone
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\sklearn\base.py", line 17, in <module>
+    from .utils import _IS_32BIT
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\sklearn\utils\__init__.py", line 25, in <module>
+    from .fixes import parse_version, threadpool_info
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\sklearn\utils\fixes.py", line 19, in <module>
+    import scipy.stats
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\scipy\stats\__init__.py", line 467, in <module>
+    from ._stats_py import *
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\scipy\stats\_stats_py.py", line 46, in <module>
+    from . import distributions
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\scipy\stats\distributions.py", line 8, in <module>
+    from ._distn_infrastructure import (rv_discrete, rv_continuous, rv_frozen)
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\scipy\stats\_distn_infrastructure.py", line 24, in <module>
+    from scipy import optimize
+  File "<frozen importlib._bootstrap>", line 1075, in _handle_fromlist
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\scipy\__init__.py", line 225, in __getattr__
+    return _importlib.import_module(f'scipy.{name}')
+  File "C:\Program Files\Python310\lib\importlib\__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\scipy\optimize\__init__.py", line 413, in <module>
+    from ._linprog import linprog, linprog_verbose_callback
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\scipy\optimize\_linprog.py", line 22, in <module>
+    from ._linprog_ip import _linprog_ip
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\scipy\optimize\_linprog_ip.py", line 27, in <module>
+    from ._linprog_util import _postsolve
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\scipy\optimize\_linprog_util.py", line 9, in <module>
+    from scipy.optimize._remove_redundancy import (
+  File "C:\Users\Bardi\AppData\Roaming\Python\Python310\site-packages\scipy\optimize\_remove_redundancy.py", line 9, in <module>
+    from scipy.linalg.interpolative import interp_decomp
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 879, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 969, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1091, in path_stats
+  File "<frozen importlib._bootstrap_external>", line 147, in _path_stat
+KeyboardInterrupt

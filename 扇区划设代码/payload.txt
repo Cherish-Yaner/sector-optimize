@@ -1,0 +1,45 @@
+section #0: 
+
+
+    instant_flow: 11.639999999999999
+    general_inst_cnt: 70.0
+    conflict_dissolution_cnt: 1.0
+    orientation_randomness: 7867.654401758053
+    area_traffic_density: 0.03931661593581488
+     
+
+payload_mean: 729.7587999999998 
+
+payload_list: [669.0909999999997, 766.4450000000003, 749.0489999999991, 767.523, 696.6859999999999]
+
+total_flight_length: 407.74782331473375
+section #1: 
+
+
+    instant_flow: 10.36
+    general_inst_cnt: 60.8
+    conflict_dissolution_cnt: 7.6
+    orientation_randomness: 7345.550105886908
+    area_traffic_density: 0.012634010943403237
+     
+
+payload_mean: 688.0232 
+
+payload_list: [747.2589999999997, 651.8580000000004, 705.3040000000002, 629.2479999999997, 706.4470000000001]
+
+total_flight_length: 1303.3082525784796
+section #2: 
+
+
+    instant_flow: 5.4
+    general_inst_cnt: 30.6
+    conflict_dissolution_cnt: 0.0
+    orientation_randomness: 8218.016637620118
+    area_traffic_density: 0.008404267152584893
+     
+
+payload_mean: 371.2959999999999 
+
+payload_list: [361.0399999999999, 277.6049999999999, 333.2139999999996, 298.0919999999997, 586.5290000000002]
+
+total_flight_length: 872.9305338879026

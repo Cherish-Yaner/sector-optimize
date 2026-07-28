@@ -1,0 +1,27 @@
+source marllib_1/Scripts/activate  # first step
+
+## illu
+
+python illu.py $render_log
+
+(logrender2.txt)
+
+## render
+
+python render.py >$render_log
+
+## train
+
+python train.py >$train_log
+
+(lognow2.txt)
+
+## hyparam_path
+
+\pure\MARLlib\marllib\marl\algos\hyperparams\common\mappo.yaml
+
+## 只显示初始图：
+python illu_test.py
+
+## 根据渲染结果显示最终的扇区图：
+python old_illu.py logrender2.txt
