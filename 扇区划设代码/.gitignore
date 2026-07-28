@@ -11,10 +11,7 @@ __pycache__/
 
 # Logs and outputs
 logs/
-*.png
-*.csv
 exp_results/
 obs/
 test/
-*.zip
 pid.txt
