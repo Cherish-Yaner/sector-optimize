@@ -1,12 +1,20 @@
+# Python virtual environment
 marllib_1/
 MARLlib/
-marllib_test/
+
+# Python cache
 __pycache__/
+*.pyc
+
+# Editor
 .vscode/
+
+# Logs and outputs
 logs/
-obs/
+*.png
+*.csv
 exp_results/
+obs/
 test/
 *.zip
-*.pyc
 pid.txt
