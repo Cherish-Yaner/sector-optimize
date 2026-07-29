@@ -1,24 +1,32 @@
-# ─── 激活虚拟环境（先做这一步）───
-# 如果你用的是 conda 环境：
-#   conda activate sector-optimize
-# 如果你用的是虚拟环境：
-#   marllib_1\Scripts\activate   (Windows)
-#   source marllib_1/Scripts/activate   (Linux)
+1. 激活虚拟环境
+conda activate sector-optimize
 
-# ─── 只显示初始扇区图（验证环境最快）───
+
+    配置检查
+config.json 已设置: scene_count=100
+train.py 已注释掉 restore_path（从头训练）
+render.py 建议改: stop_timesteps=200（看完整 episode）
+
+
+2. 只显示初始扇区图
 python illu_test.py
 
-# ─── 训练模型（耗时数小时到数天）───
-# 日志文件会保存到 output/ 目录下，每次换个名字
-python train.py > output/train_20250101_120000.txt
 
-# ─── 用训练好的模型渲染 ───
-python render.py > output/render_20250101_120000.txt
+3. 训练模型
+日志文件会保存到 output/train_log 目录下，每次都会自动换个名字
+执行：python train.py > output/train_logs/train_$(Get-Date -Format 'yyyyMMdd_HHmmss').txt       按时间戳命名
 
-# ─── 分析渲染日志，查看结果 ───
-# CSV、PNG 都会自动存到 output/ 目录，文件名带时间戳不覆盖
-python illu.py output/render_20250101_120000.txt
-python old_illu.py output/render_20250101_120000.txt
 
-# ─── 用项目自带的日志快速看结果 ───
-python old_illu.py output/logrender2.txt
+4. 用训练好的模型渲染
+先确认 render.py 里的 restore_path 指向最新 checkpoint，即当前训练得到的模型参数
+执行：python render.py > output/render_logs/render_$(Get-Date -Format 'yyyyMMdd_HHmmss').txt      按时间戳命名
+
+
+5. 分析渲染日志，查看结果
+CSV、PNG 都会自动存到 output/ 目录，文件名带时间戳不覆盖
+python illu.py output/render_logs/xxxxx.txt      输入当前跑完的 render 日志
+python old_illu.py output/render_logs/xxxxx.txt
+
+
+6. 用项目自带的日志快速看结果
+python old_illu.py output/render_logs/logrender2.txt
