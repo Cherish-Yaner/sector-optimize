@@ -83,7 +83,7 @@ class TBXGridEnv(MultiAgentEnv):
     def reset(self, *, seed=None, options=None):
 
         print("load existing sectors...")
-        with open(os.path.dirname(__file__) + '\\sections.pkl', 'rb') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'output', 'sections.pkl'), 'rb') as f:
             global sections
             sections[:] = pickle.load(f)
 

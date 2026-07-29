@@ -1,3 +1,4 @@
+import os
 import pickle
 import sys
 import time
@@ -24,8 +25,10 @@ def init():
 
   hexize()
 
+  os.makedirs('output', exist_ok=True)
+
   if gbl_config.reload_hexgrid:
-    with open('hexes.pkl', 'wb') as f:
+    with open('output/hexes.pkl', 'wb') as f:
       pickle.dump(hexes, f)
 
   if gbl_config.reload_sectors:
@@ -33,7 +36,7 @@ def init():
       get_generate_sections()
   else:
     print("load existing sections...")
-    with open('sections.pkl', 'rb') as f:
+    with open('output/sections.pkl', 'rb') as f:
       global sections
       sections[:] = pickle.load(f)
 
@@ -41,14 +44,14 @@ def init():
     for hex_grid in section.grid_list:
       hexes[hex_grid].section = section.index
   
-  with open('sections.pkl', 'wb') as f:
+  with open('output/sections.pkl', 'wb') as f:
     pickle.dump(sections, f)
 
   scene_init()
   print("scene init done")
 
   scene_val()
-  with open('payload.txt', 'w') as f:
+  with open('output/payload.txt', 'w') as f:
     for section in sections:
       f.write(f"""section #{section.index}: \n
 {section.section_payload} \n

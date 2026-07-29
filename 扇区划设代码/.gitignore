@@ -15,3 +15,7 @@ exp_results/
 obs/
 test/
 pid.txt
+output/
+
+# Backup files
+runcode-*.txt

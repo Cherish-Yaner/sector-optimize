@@ -1,23 +1,24 @@
 # ─── 激活虚拟环境（先做这一步）───
-# Windows: marllib_1\Scripts\activate
-# Linux:   source marllib_1/Scripts/activate
+# 如果你用的是 conda 环境：
+#   conda activate sector-optimize
+# 如果你用的是虚拟环境：
+#   marllib_1\Scripts\activate   (Windows)
+#   source marllib_1/Scripts/activate   (Linux)
 
 # ─── 只显示初始扇区图（验证环境最快）───
 python illu_test.py
 
 # ─── 训练模型（耗时数小时到数天）───
-# 每次训练换一个文件名，避免覆盖
-python train.py > train_20250101_120000.txt
+# 日志文件会保存到 output/ 目录下，每次换个名字
+python train.py > output/train_20250101_120000.txt
 
 # ─── 用训练好的模型渲染 ───
-python render.py > render_20250101_120000.txt
+python render.py > output/render_20250101_120000.txt
 
 # ─── 分析渲染日志，查看结果 ───
-# 新版（只生成 CSV）：文件名会自动追加时间戳
-python illu.py render_20250101_120000.txt
-
-# 旧版（生成奖励曲线图 + CSV）：文件名会自动追加时间戳
-python old_illu.py render_20250101_120000.txt
+# CSV、PNG 都会自动存到 output/ 目录，文件名带时间戳不覆盖
+python illu.py output/render_20250101_120000.txt
+python old_illu.py output/render_20250101_120000.txt
 
 # ─── 用项目自带的日志快速看结果 ───
-python old_illu.py logrender2.txt
+python old_illu.py output/logrender2.txt

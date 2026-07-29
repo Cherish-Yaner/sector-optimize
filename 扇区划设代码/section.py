@@ -1,3 +1,4 @@
+import os
 from shapely.geometry import Polygon, Point, LineString
 import numpy as np
 from typing import Optional, List
@@ -149,7 +150,8 @@ def get_generate_sections():
     print(f'{hex_grid.index} in section #{hex_grid_areas_intersections[0][0]}')
     sections[hex_grid_areas_intersections[0][0]].grid_list.append(hex_grid.index)
 
-  with open('sections.txt', 'w') as f:
+  os.makedirs('output', exist_ok=True)
+  with open('output/sections.txt', 'w') as f:
     for section in sections:
       f.write(f'section #{section.index}: {section.grid_list}\n') 
 

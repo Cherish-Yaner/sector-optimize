@@ -172,7 +172,8 @@ def plot_reward(
     plt.tight_layout()
 
     ts = datetime.now().strftime("_%Y%m%d_%H%M%S")
-    base = os.path.splitext(log_path)[0]
+    os.makedirs("output", exist_ok=True)
+    base = os.path.join("output", os.path.basename(os.path.splitext(log_path)[0]))
 
     out_png = base + ts + ".png"
     plt.savefig(out_png, dpi=150)
