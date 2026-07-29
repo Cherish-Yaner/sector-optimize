@@ -6,8 +6,8 @@ import pickle
 from typing import Dict, List, Tuple
 from ast import literal_eval
 
-import gym
-from gym.spaces import Dict as GymDict, Discrete, Box
+import gymnasium as gym
+from gymnasium.spaces import Dict as GymDict, Discrete, Box
 import numpy as np
 from ray.rllib.env.multi_agent_env import MultiAgentEnv
 from marllib.envs.base_env import ENV_REGISTRY

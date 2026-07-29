@@ -1,27 +1,23 @@
-source marllib_1/Scripts/activate  # first step
+# ─── 激活虚拟环境（先做这一步）───
+# Windows: marllib_1\Scripts\activate
+# Linux:   source marllib_1/Scripts/activate
 
-## illu
-
-python illu.py $render_log
-
-(logrender2.txt)
-
-## render
-
-python render.py >$render_log
-
-## train
-
-python train.py >$train_log
-
-(lognow2.txt)
-
-## hyparam_path
-
-\pure\MARLlib\marllib\marl\algos\hyperparams\common\mappo.yaml
-
-## 只显示初始图：
+# ─── 只显示初始扇区图（验证环境最快）───
 python illu_test.py
 
-## 根据渲染结果显示最终的扇区图：
+# ─── 训练模型（耗时数小时到数天）───
+# 每次训练换一个文件名，避免覆盖
+python train.py > train_20250101_120000.txt
+
+# ─── 用训练好的模型渲染 ───
+python render.py > render_20250101_120000.txt
+
+# ─── 分析渲染日志，查看结果 ───
+# 新版（只生成 CSV）：文件名会自动追加时间戳
+python illu.py render_20250101_120000.txt
+
+# 旧版（生成奖励曲线图 + CSV）：文件名会自动追加时间戳
+python old_illu.py render_20250101_120000.txt
+
+# ─── 用项目自带的日志快速看结果 ───
 python old_illu.py logrender2.txt

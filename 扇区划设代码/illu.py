@@ -8,6 +8,8 @@ from PyQt6.QtCore import QThread, pyqtSignal, QObject, QCoreApplication, QMetaOb
 
 import pandas as pd
 
+from datetime import datetime
+
 import pickle
 import threading
 import socket
@@ -228,8 +230,10 @@ def plot_reward(
     cols = ["step"] + [c for c in save_df.columns if c != "step"]
     save_df = save_df[cols]
 
-    save_df.to_csv(os.path.splitext(log_path)[0] + "_overall.csv", index=False)
-    print(f"csv 已保存到: {os.path.splitext(log_path)[0] + '_overall.csv'}")
+    ts = datetime.now().strftime("_%Y%m%d_%H%M%S")
+    csv_path = os.path.splitext(log_path)[0] + ts + "_overall.csv"
+    save_df.to_csv(csv_path, index=False)
+    print(f"csv 已保存到: {csv_path}")
 
 if __name__ == "__main__":
     

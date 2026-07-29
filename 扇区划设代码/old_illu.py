@@ -8,6 +8,8 @@ from PyQt6.QtCore import QThread, pyqtSignal, QObject, QCoreApplication, QMetaOb
 
 import pandas as pd
 
+from datetime import datetime
+
 import pickle
 import threading
 import socket
@@ -169,7 +171,10 @@ def plot_reward(
     plt.legend()
     plt.tight_layout()
 
-    out_png = os.path.splitext(log_path)[0] + ".png"
+    ts = datetime.now().strftime("_%Y%m%d_%H%M%S")
+    base = os.path.splitext(log_path)[0]
+
+    out_png = base + ts + ".png"
     plt.savefig(out_png, dpi=150)
     print(f"rew 已保存到: {out_png}")
 
@@ -187,17 +192,18 @@ def plot_reward(
     plt.legend()
     plt.tight_layout()
 
-    out_png = os.path.splitext(log_path)[0] + "_payload.png"
-    plt.savefig(out_png, dpi=150)
-    print(f"rew 已保存到: {out_png}")
+    out_png_payload = base + ts + "_payload.png"
+    plt.savefig(out_png_payload, dpi=150)
+    print(f"payload 已保存到: {out_png_payload}")
 
     save_df = pd.DataFrame(overall_hist).fillna(0)
 
     cols = ["step"] + [c for c in save_df.columns if c != "step"]
     save_df = save_df[cols]
 
-    save_df.to_csv(os.path.splitext(log_path)[0] + "_overall.csv", index=False)
-    print(f"csv 已保存到: {os.path.splitext(log_path)[0] + '_overall.csv'}")
+    csv_path = base + ts + "_overall.csv"
+    save_df.to_csv(csv_path, index=False)
+    print(f"csv 已保存到: {csv_path}")
 
 if __name__ == "__main__":
     
