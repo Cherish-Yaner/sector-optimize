@@ -1,5 +1,5 @@
 {
-  "scene_count": 5,
+  "scene_count": 100,      
   "data_name": "35data",
   "auto_reload": {
     "hexgrid": false,

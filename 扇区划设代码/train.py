@@ -23,17 +23,16 @@ def render():
         num_workers=0,
         checkpoint_freq=100,
         checkpoint_end=True,
-        restore_path={
-            # 网络参数
-          'params_path': "exp_results/mappo_mlp_default/MAPPOTrainer_TBXGridEnv_default_dae80_00000_0_2025-06-26_03-51-59/params.json",
-            # 训练状态
-          'model_path': "exp_results/mappo_mlp_default/MAPPOTrainer_TBXGridEnv_default_dae80_00000_0_2025-06-26_03-51-59/checkpoint_000400/checkpoint-400"
-        }
+        # restore_path={      # 重新训练时不需要该路径下的参数，只有在想继续之前的模型进行训练时才需要
+        #     # 网络参数
+        #   'params_path': "exp_results/mappo_mlp_default/MAPPOTrainer_TBXGridEnv_default_dae80_00000_0_2025-06-26_03-51-59/params.json",
+        #     # 训练状态
+        #   'model_path': "exp_results/mappo_mlp_default/MAPPOTrainer_TBXGridEnv_default_dae80_00000_0_2025-06-26_03-51-59/checkpoint_000400/checkpoint-400"
+        # }      
     )
 
 if __name__ == "__main__":
     
     init()
     scene_step()
-
     render()
