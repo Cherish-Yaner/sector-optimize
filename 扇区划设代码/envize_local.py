@@ -62,6 +62,7 @@ class TBXGridEnv(MultiAgentEnv):
         print("num_grids:", self.num_grids)
 
         self.agents = [f"{i}" for i in range(self.num_agents)]
+        self._agent_ids = set(self.agents)
 
         self.cur_agent = 0
         self.step_cnt = 0
