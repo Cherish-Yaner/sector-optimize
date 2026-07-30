@@ -19,7 +19,7 @@ def hexize():
 
   if not gbl_config.reload_hexgrid:
     print("load existing gridization result...")
-    with open("output/hexes.pkl", "rb") as f:
+    with open("output/cache/hexes.pkl", "rb") as f:
       global hexes
       hexes[:] = pickle.load(f)
 
@@ -39,8 +39,8 @@ def hexize():
 
   search_neighbors(first_hex)
 
-  os.makedirs('output', exist_ok=True)
-  with open('output/hexes.txt', 'w') as f:
+  os.makedirs('output/cache', exist_ok=True)
+  with open('output/cache/hexes.txt', 'w') as f:
     for hex in hexes:
       f.write(f'hex #{hex.index}: {hex.vertices}\n{hex.neighbors}\n')
   

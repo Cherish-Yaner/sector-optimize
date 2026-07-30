@@ -88,7 +88,7 @@ def parse_log(path: str):
                     processing = True
                 elif reset_count > 2:
                     print("load existing sections...")
-                    with open('output/sections.pkl', 'rb') as f:
+                    with open('output/cache/sections.pkl', 'rb') as f:
                         global sections
                         sections[:] = pickle.load(f)
 
@@ -231,8 +231,8 @@ def plot_reward(
     save_df = save_df[cols]
 
     ts = datetime.now().strftime("_%Y%m%d_%H%M%S")
-    os.makedirs("output", exist_ok=True)
-    csv_path = os.path.join("output", os.path.basename(os.path.splitext(log_path)[0]) + ts + "_overall.csv")
+    os.makedirs("output/analysis", exist_ok=True)
+    csv_path = os.path.join("output/analysis", os.path.basename(os.path.splitext(log_path)[0]) + ts + "_overall.csv")
     save_df.to_csv(csv_path, index=False)
     print(f"csv 已保存到: {csv_path}")
 
