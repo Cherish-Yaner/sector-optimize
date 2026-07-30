@@ -1,3 +1,9 @@
+import os
+os.environ['RAY_LOCAL_MODE'] = '1'
+
+import gymnasium as gym
+import sys
+sys.modules['gym'] = gym
 
 from init import init
 from scene import scene_step
