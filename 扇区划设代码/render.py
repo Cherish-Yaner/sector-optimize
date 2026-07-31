@@ -29,9 +29,11 @@ def render():
         share_policy="all",
         num_workers=0,
         restore_path={
-            # 网络参数（不需要优化器参数）
-          'params_path': "exp_results/mappo_mlp_default/MAPPOTrainer_TBXGridEnv_default_847b8_00000_0_2025-06-26_13-50-51/params.json",
-          'render': True
+            # 网络参数  传入 train.py 中训练好的模型参数路径，进行渲染
+            'params_path': "exp_results/mappo_mlp_default/MAPPOTrainer_TBXGridEnv_default_57961_00000_0_2026-07-30_11-47-10/params.json",
+            # 训练状态
+            'model_path': "exp_results/mappo_mlp_default/MAPPOTrainer_TBXGridEnv_default_57961_00000_0_2026-07-30_11-47-10/checkpoint_001000",
+            'render': True
         }
     )
 

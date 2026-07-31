@@ -73,9 +73,9 @@ class TBXGridEnv(MultiAgentEnv):
         obs_len = self.num_agents * self.num_grids * 3 + self.num_agents * (self.num_agents + 2)
         self.observation_space = GymDict(
             {
-                "obs": gym.spaces.Box(low=-1e9, high=1e9, shape=(obs_len,), dtype=np.float32),
-                "state": gym.spaces.Box(low=-1e9, high=1e9, shape=(obs_len,), dtype=np.float32),
-                "action_mask": gym.spaces.Box(low=-1, high=2, shape=(self.action_space.n,), dtype=np.int8),
+                "obs": gym.spaces.Box(low=np.float32(-1e9), high=np.float32(1e9), shape=(obs_len,), dtype=np.float32),
+                "state": gym.spaces.Box(low=np.float32(-1e9), high=np.float32(1e9), shape=(obs_len,), dtype=np.float32),
+                "action_mask": gym.spaces.Box(low=np.int8(-1), high=np.int8(2), shape=(self.action_space.n,), dtype=np.int8),
             }
         )
 
@@ -101,6 +101,8 @@ class TBXGridEnv(MultiAgentEnv):
         return {str(self.cur_agent): obs}
 
     def step(self, action_dict: Dict[str, int]):
+        if not action_dict:
+            return {}, {}, {"__all__": True}, {}
         agent_id_str, act = next(iter(action_dict.items()))
         agent_id = int(agent_id_str)
 
@@ -129,7 +131,7 @@ class TBXGridEnv(MultiAgentEnv):
     # ---------- Internal helpers ---------- #
 
     def _get_obs(self, i: int) -> np.ndarray:
-        obs = list(map(float, list(flatten(get_overall_observation(i)))))
+        obs = np.array(list(map(float, list(flatten(get_overall_observation(i))))), dtype=np.float32)
 
         legal = get_valid_transfers(i)
 
