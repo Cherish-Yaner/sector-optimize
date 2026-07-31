@@ -1,3 +1,16 @@
+import os
+os.environ['RAY_LOCAL_MODE'] = '1'
+
+import logging
+logging.getLogger("ray.rllib").setLevel(logging.ERROR)
+
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="gymnasium")
+warnings.filterwarnings("ignore", category=RuntimeWarning, message="overflow encountered in reduce")
+
+import gymnasium as gym
+import sys
+sys.modules['gym'] = gym
 
 from init import init
 from scene import scene_step

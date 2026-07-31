@@ -128,6 +128,9 @@ class TBXGridEnv(MultiAgentEnv):
     def close(self):
         pass
 
+    def render(self, *args, **kwargs):
+        pass
+
     # ---------- Internal helpers ---------- #
 
     def _get_obs(self, i: int) -> np.ndarray:
