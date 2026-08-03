@@ -59,7 +59,11 @@ def parse_log(path: str):
     reset_count = 0
     processing = False
 
-    with open(path, encoding="utf-8") as fh:
+    with open(path, "rb") as fh:
+        head = fh.read(4)
+    encoding = "utf-16" if head.startswith(b"\xff\xfe") else "utf-8-sig"
+
+    with open(path, encoding=encoding) as fh:
 
         tmp_rew_hist: Dict[str, float] = {}
         tmp_pay_hist: Dict[str, float] = {}
@@ -264,6 +268,14 @@ if __name__ == "__main__":
     re_build_section()
 
     scene_step(False)
+
+    gridmap.update()
+
+    ts = datetime.now().strftime("_%Y%m%d_%H%M%S")
+    os.makedirs("output/analysis", exist_ok=True)
+    img_path = os.path.join("output/analysis", "sector_distribution" + ts + ".png")
+    gridmap.grab().save(img_path)
+    print(f"扇区划分图已保存到: {img_path}")
 
     # for 
 
