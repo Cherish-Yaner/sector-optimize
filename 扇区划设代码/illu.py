@@ -82,7 +82,7 @@ def parse_log(path: str):
             #     continue
 
             # --- reset 检测 ---
-            if RESET_KEYWORD in line:
+            if RESET_KEYWORD in line or "load existing sectors" in line:
                 
                 # print(line)
                 reset_count += 1
