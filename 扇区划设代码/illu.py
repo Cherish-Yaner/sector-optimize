@@ -6,6 +6,7 @@ from PyQt6.QtGui import QPainter, QPen, QPolygonF
 from PyQt6.QtCore import Qt, QPointF
 from PyQt6.QtCore import QThread, pyqtSignal, QObject, QCoreApplication, QMetaObject
 
+import numpy as np
 import pandas as pd
 
 from datetime import datetime
@@ -16,10 +17,9 @@ import socket
 from typing import List, Dict, Tuple, Optional, Any
 
 from init import init
-from scene import transfer_grid, input_action, scene_step, get_overall_observation, save_observation_to_json, scene_act, get_valid_transfers, transfer_grid, re_build_section
+from scene import transfer_grid, input_action, scene_step, get_overall_observation, save_observation_to_json, scene_act, get_valid_transfers, re_build_section
 
-from section import get_grid_section
-from section import sections
+from section import get_grid_section, sections
 
 from register_env import env_creator
 
@@ -36,26 +36,55 @@ gbl_lock = threading.Lock()
 
 STEP_RE = re.compile(r"^Step\s+(\d+)\b")
 TRANSFER_RE = re.compile(
-    r"transfer grid (\d+) from section (\d+) to section (\d+) with reward ([\d\.\-eE]+)"
+    r"transfer grid (\d+) from section (\d+) to section (\d+) with reward ([\d\.\-eE+]+)"
 )
 RESET_KEYWORD = "load existing sections"
 PAYLOAD_RE = re.compile(
-    r"section (\d+) payload ([\d\.\-eE]+)"
+    r"section (\d+) payload ([\+\-]?[\d\.eE]+)"
 )
+
+nr_sections = len(sections)
+
+
+def compute_cv(values):
+    """变异系数 CV = σ/μ，衡量各扇区负载差距，越小越均衡。"""
+    arr = np.asarray([v for v in values if v is not None], dtype=float)
+    if arr.size == 0:
+        return 0.0
+    m = arr.mean()
+    if m == 0:
+        return 0.0
+    return float(arr.std() / m)
+
+
+def new_episode(eid: int) -> Dict[str, Any]:
+    return {
+        "episode": eid,
+        "steps": 0,
+        "cv_sum": 0.0,
+        "total_reward": 0.0,
+        "actions": 0,
+        "step_payloads": {},
+        "avg_imbalance": float("nan"),
+        "snapshot": None,
+        "rew_series": {i: [] for i in range(nr_sections)},
+        "pay_series": {i: [] for i in range(nr_sections)},
+    }
+
+
+def finish_episode(cur: Dict[str, Any]) -> None:
+    cur["avg_imbalance"] = cur["cv_sum"] / cur["steps"] if cur["steps"] else float("nan")
+    cur["snapshot"] = [list(sec.grid_list) for sec in sections]
+
 
 def parse_log(path: str):
 
-    cumulative: Dict[int, float] = {}
-    # payload: Dict[int, float] = {}
-    history: Dict[int, List[Tuple[int, float]]] = {}
-    payload_history: Dict[int, List[Tuple[int, float]]] = {}
-
     overall_history: List[Dict[str, Any]] = []
+    episodes: List[Dict[str, Any]] = []
+    cur: Optional[Dict[str, Any]] = None
 
     current_step: Optional[int] = None
-    current_step_since_last_reset: Optional[int] = None
-    step_valued: bool = False
-
+    episode_step = 0
     reset_count = 0
     processing = False
 
@@ -70,95 +99,82 @@ def parse_log(path: str):
 
         for raw_line in fh:
             line = raw_line.strip()
-            
-            # if "transfer grid" in line.lower():        # 先用包含判断
-            #     print(line)  # DEBUG: 打印出所有 transfer 行
-            #     m = TRANSFER_RE.search(line)
-            #     if not m:
-            #         # DEBUG: 行里有关键词却没匹配成功，打印出来给我们看
-            #         print(f"[未匹配] {line}")
-            #         continue
-            # else:
-            #     continue
 
             # --- reset 检测 ---
             if RESET_KEYWORD in line or "load existing sectors" in line:
-                
-                # print(line)
+                if cur is not None and cur["steps"]:
+                    finish_episode(cur)
+                    episodes.append(cur)
+                cur = None
+
                 reset_count += 1
-                cumulative.clear()
                 if reset_count == 2:
-                    history.clear()
                     processing = True
                 elif reset_count > 2:
-                    print("load existing sections...")
                     with open('output/cache/sections.pkl', 'rb') as f:
                         global sections
                         sections[:] = pickle.load(f)
 
                     for section in sections:
                         for hex_grid in section.grid_list:
-                            # print("\033[1;32m" + str(hex_grid) + "\033[0m")
                             hexes[hex_grid].section = section.index
 
-                    if processing:
-                        overall_history.append({
-                            **tmp_rew_hist,
-                            **tmp_pay_hist,
-                            "step": current_step - 1 if current_step is not None else 0,
-                            "episode_step": current_step_since_last_reset - 1,
-                            "episode": reset_count - 2
-                        })
-                    # processing = False
-                current_step_since_last_reset = 0
+                if reset_count >= 2:
+                    cur = new_episode(reset_count - 1)
+                episode_step = 0
                 continue
             # ------------------
 
             # Step 行
             step_match = STEP_RE.match(line)
             if step_match:
-                # if processing and current_step != 1:
-                #     overall_history.append({
-                #         **tmp_rew_hist,
-                #         **tmp_pay_hist,
-                #         "step": current_step - 1 if current_step is not None else 0
-                #     })
-                current_step = int(step_match.group(1))
-                current_step_since_last_reset += 1
-                if processing and current_step > 3 and current_step_since_last_reset > 1:
+                if processing and current_step is not None and episode_step > 2:
                     overall_history.append({
                         **tmp_rew_hist,
                         **tmp_pay_hist,
-                        "step": current_step - 3,
-                        "episode_step": current_step_since_last_reset - 1,
+                        "step": current_step - 1,
+                        "episode_step": episode_step - 1,
                         "episode": reset_count - 1
                     })
-                # step_valued = False
-                scene_step(True)
-                if processing:
-                    tmp_pay_hist.clear()
+
+                current_step = int(step_match.group(1))
+                episode_step += 1
+
+                if cur is not None:
+                    cur["steps"] += 1
+                    cur["step_payloads"] = {}
                     for section in sections:
                         tmp_pay_hist[f"section_{section.index}_payload"] = section.payload_mean
                         tmp_rew_hist[f"section_{section.index}_reward"] = 0.0
-                        payload_history.setdefault(section.index, []).append(
-                            (current_step if current_step is not None else 0, section.payload_mean)
-                        )
 
-            if not processing:
+                if not processing:
+                    continue
                 continue
 
-            # payload_match = PAYLOAD_RE.search(line)
-            # if payload_match:
-            #     section_payload_id = int(payload_match.group(1))
-            #     payload = float(payload_match.group(2)) 
+            if not processing or cur is None:
+                continue
 
-            #     payload_history.setdefault(section_payload_id, []).append(
-            #         (current_step if current_step is not None else 0, payload)
-            #     )
+            # payload 指标（用于负载均衡度评估）
+            payload_match = PAYLOAD_RE.search(line)
+            if payload_match:
+                section_payload_id = int(payload_match.group(1))
+                payload = float(payload_match.group(2))
 
-            #     tmp_pay_hist[f"section_{section_payload_id}_payload"] = payload
-            
-            
+                cur["step_payloads"][section_payload_id] = payload
+                if len(cur["step_payloads"]) >= nr_sections:
+                    cv = compute_cv([
+                        cur["step_payloads"].get(i, 0.0)
+                        for i in range(nr_sections)
+                    ])
+                    cur["cv_sum"] += cv
+
+                cur["pay_series"][section_payload_id].append(
+                    (current_step if current_step is not None else 0, payload)
+                )
+                tmp_pay_hist[f"section_{section_payload_id}_payload"] = payload
+                continue
+
+            # transfer 行
             transfer_match = TRANSFER_RE.search(line)
             if transfer_match:
                 grid_id = int(transfer_match.group(1))
@@ -168,97 +184,118 @@ def parse_log(path: str):
 
                 transfer_grid(grid_id, dst, src)
 
-                cumulative[dst] = cumulative.get(dst, 0.0) + reward + 10.0
-                history.setdefault(dst, []).append(
-                    (current_step if current_step is not None else 0, cumulative[dst])
+                cur["total_reward"] += reward + 10.0
+                cur["actions"] += 1
+                cur["rew_series"][dst].append(
+                    (current_step if current_step is not None else 0, cur["total_reward"])
                 )
-
                 tmp_rew_hist[f"section_{dst}_reward"] = reward + 10.0
 
-    return history, payload_history, overall_history
+    if cur is not None and cur["steps"]:
+        finish_episode(cur)
+        episodes.append(cur)
+
+    return episodes, overall_history
 
 
-def plot_reward(
-    rew_hist: Dict[int, List[Tuple[int, float]]], 
-    pay_hist: Dict[int, List[Tuple[int, float]]],
-    overall_hist: List[Dict[str, Any]],
-    log_path: str
-) -> None:
-    """绘制 PNG。"""
-    if not rew_hist:
-        print("no rew_hist")
-        exit(1)
-    
-    if not pay_hist:
-        print("no pay_hist")
-        exit(1)
-        
-    # reward
+def pick_best_episode(
+    episodes: List[Dict[str, Any]]
+) -> Optional[Dict[str, Any]]:
+    """按负载均衡（avg_imbalance 最小）自动选取最优回合。"""
+    valid = [
+        ep for ep in episodes
+        if ep["steps"] > 0 and ep["avg_imbalance"] == ep["avg_imbalance"]
+    ]
+    if not valid:
+        return None
+    return min(valid, key=lambda ep: (ep["avg_imbalance"], ep["episode"]))
 
-    # plt.figure(figsize=(8, 5))
-    # for section, series in sorted(rew_hist.items()):
-    #     steps = [s for s, _ in series]
-    #     rewards = [r for _, r in series]
-    #     plt.plot(steps, rewards, label=f"section {section}")
 
-    # plt.xlabel("Step")
-    # plt.ylabel("Cumulative reward")
-    # plt.title("Cumulative reward")
-    # plt.legend()
-    # plt.tight_layout()
+def restore_episode(best: Dict[str, Any]) -> None:
+    """把扇区状态恢复为指定回合结束时的快照。"""
+    for sec, grids in zip(sections, best["snapshot"]):
+        sec.grid_list = list(grids)
+        for grid_id in grids:
+            hexes[grid_id].section = sec.index
 
-    # out_png = os.path.splitext(log_path)[0] + ".png"
-    # plt.savefig(out_png, dpi=150)
-    # print(f"rew 已保存到: {out_png}")
 
-    # # payload
-
-    # plt.figure(figsize=(8, 5))
-    # for section, series in sorted(pay_hist.items()):
-    #     steps = [s for s, _ in series]
-    #     rewards = [r for _, r in series]
-    #     plt.plot(steps, rewards, label=f"section {section}")
-
-    # plt.xlabel("Step")
-    # plt.ylabel("Payload")
-    # plt.title("Payload")
-    # plt.legend()
-    # plt.tight_layout()
-
-    # out_png = os.path.splitext(log_path)[0] + "_payload.png"
-    # plt.savefig(out_png, dpi=150)
-    # print(f"rew 已保存到: {out_png}")
+def save_overall_csv(overall_hist: List[Dict[str, Any]], log_path: str) -> Optional[str]:
+    if not overall_hist:
+        return None
 
     save_df = pd.DataFrame(overall_hist).fillna(0)
-
-    cols = ["step"] + [c for c in save_df.columns if c != "step"]
-    save_df = save_df[cols]
+    base_cols = [c for c in ["step", "episode_step", "episode"] if c in save_df.columns]
+    other_cols = [c for c in save_df.columns if c not in base_cols]
+    save_df = save_df[base_cols + other_cols]
 
     ts = datetime.now().strftime("_%Y%m%d_%H%M%S")
     os.makedirs("output/analysis", exist_ok=True)
     csv_path = os.path.join("output/analysis", os.path.basename(os.path.splitext(log_path)[0]) + ts + "_overall.csv")
     save_df.to_csv(csv_path, index=False)
     print(f"csv 已保存到: {csv_path}")
+    return csv_path
+
+
+def save_episode_metrics(
+    episodes: List[Dict[str, Any]],
+    best: Optional[Dict[str, Any]],
+    log_path: str
+) -> str:
+    rows = []
+    for ep in episodes:
+        rows.append({
+            "episode": ep["episode"],
+            "n_steps": ep["steps"],
+            "avg_imbalance": round(ep["avg_imbalance"], 6),
+            "total_reward": round(ep["total_reward"], 3),
+            "actions": ep["actions"],
+            "selected": 1 if best is not None and ep["episode"] == best["episode"] else 0,
+        })
+    save_df = pd.DataFrame(rows)
+    ts = datetime.now().strftime("_%Y%m%d_%H%M%S")
+    os.makedirs("output/analysis", exist_ok=True)
+    csv_path = os.path.join("output/analysis", os.path.basename(os.path.splitext(log_path)[0]) + ts + "_episode_metrics.csv")
+    save_df.to_csv(csv_path, index=False)
+    print(f"逐回合指标已保存到: {csv_path}")
+    return csv_path
+
 
 if __name__ == "__main__":
-    
+
     app = QApplication(sys.argv)
-    # window = MainWindow()
-    # window.show()
 
     init()
-    # scene_step(True)
 
-    # from filtering import matches
-    # for i in matches:
-    #     transfer_grid(i, 2, get_grid_section(i, None))
-
-    
     parser = argparse.ArgumentParser(description="RL 日志分析脚本")
     parser.add_argument("logfile", help="日志文件路径")
+    parser.add_argument("--episode", type=int, default=None,
+                        help="手动指定绘制第 N 回合；默认按负载均衡最优回合自动选取")
     args = parser.parse_args()
 
-    plot_reward(*parse_log(args.logfile), args.logfile)
+    episodes, overall_hist = parse_log(args.logfile)
+
+    if args.episode is not None:
+        best = next((ep for ep in episodes if ep["episode"] == args.episode), None)
+        if best is None:
+            print(f"未找到 episode {args.episode}")
+            sys.exit(1)
+        used_info = f"手动指定第 {args.episode} 回合"
+    else:
+        best = pick_best_episode(episodes)
+        used_info = "自动选取负载均衡最优回合"
+
+    if best is None:
+        print("no valid episodes")
+        sys.exit(1)
+
+    save_episode_metrics(episodes, best, args.logfile)
+    save_overall_csv(overall_hist, args.logfile)
+
+    print(f"[INFO] {used_info}：第 {best['episode']} 回合用于绘制扇区划分图 "
+          f"(avg_imbalance={best['avg_imbalance']:.4f}, n_steps={best['steps']}, "
+          f"total_reward={best['total_reward']:.1f}, actions={best['actions']})")
+
+    restore_episode(best)
 
     gridmap = GridMap([], gbl_lock=gbl_lock)
     gridmap.show()
@@ -273,10 +310,8 @@ if __name__ == "__main__":
 
     ts = datetime.now().strftime("_%Y%m%d_%H%M%S")
     os.makedirs("output/analysis", exist_ok=True)
-    img_path = os.path.join("output/analysis", "sector_distribution" + ts + ".png")
+    img_path = os.path.join("output/analysis", f"sector_distribution_ep{best['episode']}" + ts + ".png")
     gridmap.grab().save(img_path)
     print(f"扇区划分图已保存到: {img_path}")
-
-    # for 
 
     sys.exit(app.exec())
