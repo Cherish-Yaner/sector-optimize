@@ -266,8 +266,8 @@ def plot_reward_payload(
     log_path: str
 ) -> None:
     ts = datetime.now().strftime("_%Y%m%d_%H%M%S")
-    os.makedirs("output", exist_ok=True)
-    base = os.path.join("output", os.path.basename(os.path.splitext(log_path)[0]))
+    os.makedirs(os.path.join("output", "figures"), exist_ok=True)
+    base = os.path.join("output", "figures", os.path.basename(os.path.splitext(log_path)[0]))
 
     # reward（基于最优回合）
     plt.figure(figsize=(8, 5))
