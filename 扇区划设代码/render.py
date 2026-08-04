@@ -51,7 +51,7 @@ def render():
             # 网络参数  传入 train.py 中训练好的模型参数路径，进行渲染
             'params_path': "exp_results/mappo_mlp_default/MAPPOTrainer_TBXGridEnv_default_57961_00000_0_2026-07-30_11-47-10/params.json",
             # 训练状态
-            'model_path': "exp_results/mappo_mlp_default/MAPPOTrainer_TBXGridEnv_default_57961_00000_0_2026-07-30_11-47-10/checkpoint_00400",
+            'model_path': "exp_results/mappo_mlp_default/MAPPOTrainer_TBXGridEnv_default_57961_00000_0_2026-07-30_11-47-10/checkpoint_000400",
             'render': True
         }
     )
