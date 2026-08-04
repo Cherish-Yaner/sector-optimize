@@ -199,17 +199,14 @@ def parse_log(path: str):
     return episodes, overall_history
 
 
-def pick_best_episode(
+def pick_last_episode(
     episodes: List[Dict[str, Any]]
 ) -> Optional[Dict[str, Any]]:
-    """按负载均衡（avg_imbalance 最小）自动选取最优回合。"""
-    valid = [
-        ep for ep in episodes
-        if ep["steps"] > 0 and ep["avg_imbalance"] == ep["avg_imbalance"]
-    ]
+    """不做负载均衡筛选，直接选取日志中最后一个回合。"""
+    valid = [ep for ep in episodes if ep["steps"] > 0]
     if not valid:
         return None
-    return min(valid, key=lambda ep: (ep["avg_imbalance"], ep["episode"]))
+    return max(valid, key=lambda ep: (ep["episode"], ep["steps"]))
 
 
 def restore_episode(best: Dict[str, Any]) -> None:
@@ -317,7 +314,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="RL 日志分析脚本")
     parser.add_argument("logfile", help="日志文件路径")
     parser.add_argument("--episode", type=int, default=None,
-                        help="手动指定绘制第 N 回合；默认按负载均衡最优回合自动选取")
+                        help="手动指定绘制第 N 回合；默认绘制日志中最后一个回合")
     args = parser.parse_args()
 
     episodes, overall_hist = parse_log(args.logfile)
@@ -329,8 +326,8 @@ if __name__ == "__main__":
             sys.exit(1)
         used_info = f"手动指定第 {args.episode} 回合"
     else:
-        best = pick_best_episode(episodes)
-        used_info = "自动选取负载均衡最优回合"
+        best = pick_last_episode(episodes)
+        used_info = "自动选取最后一个回合（不按负载均衡筛选）"
 
     if best is None:
         print("no valid episodes")

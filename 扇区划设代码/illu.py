@@ -260,6 +260,53 @@ def save_episode_metrics(
     return csv_path
 
 
+def plot_reward_payload(
+    best: Dict[str, Any],
+    log_path: str
+) -> None:
+    ts = datetime.now().strftime("_%Y%m%d_%H%M%S")
+    os.makedirs(os.path.join("output", "figures"), exist_ok=True)
+    base = os.path.join("output", "figures", os.path.basename(os.path.splitext(log_path)[0]))
+
+    # reward（基于选定回合）
+    plt.figure(figsize=(8, 5))
+    for section_id, series in sorted(best["rew_series"].items()):
+        if series:
+            steps = [s for s, _ in series]
+            rewards = [r for _, r in series]
+            plt.plot(steps, rewards, label=f"section {section_id}")
+
+    plt.xlabel("Step")
+    plt.ylabel("Cumulative reward")
+    plt.title(f"Episode {best['episode']} cumulative reward")
+    plt.legend()
+    plt.tight_layout()
+
+    out_png = base + ts + ".png"
+    plt.savefig(out_png, dpi=150)
+    plt.close()
+    print(f"rew 已保存到: {out_png}")
+
+    # payload（选定回合）
+    plt.figure(figsize=(8, 5))
+    for section_id, series in sorted(best["pay_series"].items()):
+        if series:
+            steps = [s for s, _ in series]
+            rewards = [r for _, r in series]
+            plt.plot(steps, rewards, label=f"section {section_id}")
+
+    plt.xlabel("Step")
+    plt.ylabel("Payload")
+    plt.title(f"Episode {best['episode']} payload")
+    plt.legend()
+    plt.tight_layout()
+
+    out_png_payload = base + ts + "_payload.png"
+    plt.savefig(out_png_payload, dpi=150)
+    plt.close()
+    print(f"payload 已保存到: {out_png_payload}")
+
+
 if __name__ == "__main__":
 
     app = QApplication(sys.argv)
@@ -290,6 +337,8 @@ if __name__ == "__main__":
 
     save_episode_metrics(episodes, best, args.logfile)
     save_overall_csv(overall_hist, args.logfile)
+
+    plot_reward_payload(best, args.logfile)
 
     print(f"[INFO] {used_info}：第 {best['episode']} 回合用于绘制扇区划分图 "
           f"(avg_imbalance={best['avg_imbalance']:.4f}, n_steps={best['steps']}, "
