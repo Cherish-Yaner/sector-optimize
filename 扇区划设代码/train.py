@@ -29,7 +29,7 @@ def render():
     mappo.fit(
         env,
         model,
-        stop={'timesteps_total': 2000000},
+        stop={'timesteps_total': 2000000},     # train 累计采样 200 万步才停
         stop_timesteps=2000000,
         local_mode=True,
         share_policy="all",
